@@ -11,7 +11,7 @@
 */
 buildscript {
     ext {
-        dataflowBeamVersion = '2.14.0'
+        dataflowBeamVersion = '2.20.0'
     }
     repositories {
         mavenCentral()
@@ -25,6 +25,7 @@ buildscript {
         classpath "net.ltgt.gradle:gradle-apt-plugin:0.19"
         classpath "gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:1.4.0"
         classpath "com.diffplug.spotless:spotless-plugin-gradle:3.24.2"
+        
         
     }
 }
@@ -121,4 +122,15 @@ spotless {
 run.mustRunAfter 'resources'
 configurations.all {
     exclude module: 'slf4j-log4j12'
+}
+
+// Force the version of guava required by Beam
+configurations.all {
+  resolutionStrategy {
+    force 'com.google.guava:guava:25.1-jre'
+  }
+}
+
+dependencies {
+  implementation 'com.google.code.gson:gson:2.8.6'
 }
