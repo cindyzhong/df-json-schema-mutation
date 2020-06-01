@@ -17,6 +17,8 @@ package com.google.swarm.event;
 
 import com.google.cloud.bigtable.beam.CloudBigtableIO;
 import com.google.cloud.bigtable.beam.CloudBigtableScanConfiguration;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
 import org.apache.beam.sdk.io.gcp.pubsub.PubsubIO;
@@ -71,8 +73,13 @@ public class PubSubtoBigTable {
                   public void processElement(ProcessContext c) throws Exception {
                     try {
                       PubsubMessage pubSubEvent = c.element();
-                      String userequipmentImeisv = pubSubEvent.getAttribute("userequipment_imeisv");
-                      String subscriberMsisdn = pubSubEvent.getAttribute("subscriber_msisdn");
+                      String pubSubPayload = new String(pubSubEvent.getPayload());
+                      JsonObject jsonObject = new Gson().fromJson(pubSubPayload, JsonObject.class);
+
+                      String userequipmentImeisv =
+                          jsonObject.get("userequipment_imeisv").toString();
+                      String subscriberMsisdn = jsonObject.get("subscriber_msisdn").toString();
+
                       String rowKey =
                           userequipmentImeisv
                               + '#'
